@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tyler Swift Silence</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #e1daf6;
+        }
+
+        path {
+            fill: transparent;
+        }
+
+        svg {
+            margin-top: -20%;
+            z-index: 2;
+        }
+
+        #volumeContainer {
+            position: absolute;
+            bottom: 50px;
+            left: 10px;
+            right: 10px;
+        }
+
+        #volumeBar {
+            width: 100%;
+            height: 50px;
+            background-color: #a86af3;
+            position: relative;
+            z-index: 2;
+            position: relative;
+        }
+
+        .volumeIndicator {
+            height: 100%;
+            position: absolute;
+            background-color: #7d3c98;
+            transition: width 0.1s;
+        }
+
+        #mainIndicator {
+            width: 0;
+        }
+
+        #ghostIndicator {
+            width: 0;
+            background-color: rgba(0, 255, 0, 0.3);
+            transition: width 0.5s;
+        }
+
+        #volumeSlider {
+            position: absolute;
+            top: 8px;
+            left: 0;
+            margin-top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            background: transparent;
+            border: none;
+            appearance: none;
+            outline: none;
+        }
+
+        #volumeSlider::-webkit-slider-thumb {
+            appearance: none;
+            width: 25px;
+            height: 60px;
+            background-color: #8a44ff;
+            border: 2px dashed white;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        #volumeSlider::-webkit-slider-thumb::before {
+            content: '';
+            position: absolute;
+            top: 0px;
+            left: 0;
+            width: 100%;
+            height: 14px;
+            background-color: #8a44ff;
+        }
+
+        #imageContainer {
+            text-align: center;
+            margin-top: 60vh;
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #volumeImage {
+            max-width: 100%;
+            max-height: 100%;
+            border: 10px solid white;
+            object-fit: contain;
+            position: relative; 
+            z-index: 1;
+            
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            position: absolute;
+
+            left: 50%;
+            transform: translate(-50%, 0);
+            text-align: center;
+            background-color: #fefefe;
+
+            border: 2px dashed purple;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flipping-image {
+            animation: flipImage 5s linear infinite;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        @keyframes flipImage {
+
+            0%,
+            100% {
+                transform: scaleX(1);
+            }
+
+            50% {
+                transform: scaleX(-1);
+            }
+        }
+
+        .fade-text {
+            animation: fadeText 2s ease-in-out infinite;
+            color: white;
+            font-size: 24px;
+            margin: 10px;
+        }
+
+        @keyframes fadeText {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="curveText">
+        <svg viewBox="0 0 425 300">
+            <path id="curve"
+                d="M6,150C49.63,120,105.79,90,156.2,100,207.89,110,213,120,264,150c40.67,20,108.57,20,229-50" />
+            <text x="25" y="20" fill="white" stroke="black" stroke-width="1">
+                <textPath xlink:href="#curve">
+                    Concealed within her fortress, the lord of pop sees all.
+                </textPath>
+            </text>
+            <text x="25" dy="1.5em" fill="white" stroke="black" stroke-width="1">
+                <textPath xlink:href="#curve">
+                    Her gaze pierces cloud, shadow, earth, and flesh.
+                </textPath>
+            </text>
+            <text x="25" dy="3em" fill="white" stroke="black" stroke-width="1">
+                <textPath xlink:href="#curve">
+                    You know of what I speak, Gandalf:
+                </textPath>
+            </text>
+            <text x="25" dy="4.5em" fill="white" stroke="black" stroke-width="1">
+                <textPath xlink:href="#curve">
+                    A great Eye, lidless, wreathed in flame. The only Taylor Swift!
+                </textPath>
+            </text>
+        </svg>
+    </div>
+    
+    
+    
+    
+    
+    
+
+    <div id="volumeContainer">
+        <label for="volumeSlider">Set Trigger Volume:</label>
+        <div id="volumeBar">
+            <div id="mainIndicator" class="volumeIndicator"></div>
+            <div id="ghostIndicator" class="volumeIndicator"></div>
+        </div>
+        <input type="range" id="volumeSlider" min="1" max="100" value="50">
+    </div>
+
+    <div id="imageContainer">
+        <img id="volumeImage" src="" alt="Volume Image">
+    </div>
+
+    <!-- Modal Popup -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <div class="flipping-image">
+                <img src="image.jpg" alt="Popup Image">
+            </div>
+            <div class="fade-text">uh oh</div>
+        </div>
+    </div>
+
+    <script>
+        const volumeIndicator = document.getElementById('mainIndicator');
+        const ghostIndicator = document.getElementById('ghostIndicator');
+        const volumeImage = document.getElementById('volumeImage');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const modal = document.getElementById('myModal');
+        const audio = new Audio('snip.mp3');
+        let alertThreshold = volumeSlider.value;
+        let isTooLoud = false;
+        let loudCounter = 0;
+
+        function beep() {
+            const audioContext = new AudioContext();
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.connect(audioContext.destination);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function playTwoBeeps() {
+            beep();
+            //await delay(400);
+            //beep();
+        }
+/* Old Images for testing
+        function setVolumeImage(percentage) {
+            if (percentage <= 20) {
+                volumeImage.src = '1.jpg';
+            } else if (percentage <= 40) {
+                volumeImage.src = '2.jpg';
+            } else if (percentage <= 60) {
+                volumeImage.src = '4.jpg';
+            } else if (percentage <= 80) {
+                volumeImage.src = '5.jpg';
+            } else {
+                volumeImage.src = '6.gif';
+                if (!isTooLoud && (modal.style.display == 'none')) {
+                    isTooLoud = true;
+                    playTwoBeeps();
+                    //showModal();
+                }
+            }
+        }
+        end old image function for testing */
+
+        function setVolumeImage(percentage) {
+            const imageFolder = './images/frame_';
+            const imageExtension = '_delay-0.1s.jpg';
+
+            if (percentage <= 25) {
+                volumeImage.src = '1.jpg';
+            } else if (percentage <= 85) {
+                const frameNumber = Math.floor((percentage - 25) / 3.75); // Distribute frames evenly from 25 to 85
+                const frameIndex = frameNumber.toString().padStart(2, '0');
+                volumeImage.src = imageFolder + frameIndex + imageExtension;
+            } else {
+                volumeImage.src = '6.gif';
+                if (!isTooLoud && (modal.style.display == 'none')) {
+                    isTooLoud = true;
+                    playTwoBeeps();
+                    //showModal();
+                }
+            }
+        }
+
+        function showModal() {
+            modal.style.display = 'flex';
+            audio.volume = 1;
+            audio.play();
+            audio.addEventListener('ended', () => {
+                modal.style.display = 'none';
+            });
+        }
+
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((stream) => {
+                const audioContext = new AudioContext();
+                const analyser = audioContext.createAnalyser();
+                const microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                async function updateVolume() {
+                    analyser.getByteFrequencyData(dataArray);
+                    const average = dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
+                    const volumePercentage = (average / 255) * 100;
+
+                    volumeIndicator.style.width = `${volumePercentage}%`;
+
+                    if (isTooLoud) {
+                       
+                        if (volumePercentage <= alertThreshold) {
+                           // console.log(loudCounter);
+                            loudCounter = 0;
+                            isTooLoud = false;
+                        } else {
+                            loudCounter++;
+
+                            if (loudCounter >= 15) {
+                                showModal();
+                                loudCounter = 0;
+                            }
+                        }
+                    } else if (volumePercentage > alertThreshold) {
+                        isTooLoud = true;
+                        playTwoBeeps();
+                    }
+
+                    ghostIndicator.style.width = `${volumePercentage}%`;
+                    //console.log((volumePercentage / alertThreshold) * 100);
+                    setVolumeImage((volumePercentage / alertThreshold) * 100);
+
+                    requestAnimationFrame(updateVolume);
+                }
+
+                updateVolume();
+            })
+            .catch((error) => {
+                console.error('Error accessing microphone:', error);
+            });
+
+        volumeSlider.addEventListener('input', () => {
+            alertThreshold = volumeSlider.value;
+            setVolumeImage(alertThreshold);
+        });
+    </script>
+</body>
+
+</html>
